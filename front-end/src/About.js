@@ -1,23 +1,53 @@
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import loadingIcon from './loading.gif'
 import './Message.css'
-import profile from './profile.jpg'
+import axios from 'axios'
+
 /**
  * A React component that represents one Message in the list of messages.
  * @param {*} param0 an object holding any props and a few function definitions passed to this component from its parent component
  * @returns The contents of this component, in JSX form.
  */
 const About = ({ }) => {
+    const [text, setText] = useState("")
+    const [photo, setPhoto] = useState("")
+    const [loaded, setLoaded] = useState(false)
+    const [error, setError] = useState('')
 
+    const fetchInfo = () => {
+        axios
+            .get(`${process.env.REACT_APP_SERVER_HOSTNAME}/about`)
+            .then(response => {
+                // axios bundles up all response data in response.data property
+                const { text, photo } = response.data
+                setText(text)
+                setPhoto(photo)
+            })
+            .catch(err => {
+                const errMsg = JSON.stringify(err, null, 2) // convert error object to a string so we can simply dump it to the screen
+                setError(errMsg)
+            })
+            .finally(() => {
+                setLoaded(true)
+            })
+    }
+
+    useEffect(() => {
+        // fetch messages this once
+        fetchInfo()
+    })
     return (
         <>
+            
             <article>
-                Hi!
-                My name is Xiyu Hao. I am an undergraduate student majoring in CS at NYU and I am looking for internship opportunities. I have development experience in Distributed Systems, Operating Systems, DBMS, Compiler Construction, and many other infrastructures. I also enjoy full-stack dev and teamworks.
+                {text}
             </article>
             <article className="photo">
-                <figure>
-                    <img src={profile} alt="" style={{ width: "40%" }} />
-                </figure>
+            {error && <p className="Messages-error">{error}</p>}
+            {!loaded && <img src={loadingIcon} alt="loading" />}
+            {loaded && (<img src={photo} alt="profile" style={{ width: "40%" }} />
+                )}
+            
             </article>
         </>
     )

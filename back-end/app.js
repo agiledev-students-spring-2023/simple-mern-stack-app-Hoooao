@@ -40,6 +40,27 @@ app.get('/messages', async (req, res) => {
   }
 })
 
+// a route to get about us info
+app.get('/about', async (req, res) => {
+  // load all messages from database
+  try {
+    res.json({
+      text: `Hi!
+      My name is Xiyu Hao. I am an undergraduate student majoring in CS at NYU and I am looking for internship opportunities. I have development experience in Distributed Systems, Operating Systems, DBMS, Compiler Construction, and many other infrastructures. I also enjoy full-stack dev and teamworks.
+  `,
+      photo: 'https://media.licdn.com/dms/image/C4D03AQHbOkmFtG9kbw/profile-displayphoto-shrink_400_400/0/1644152232531?e=1681948800&v=beta&t=JdYYv2_M2KzFAFsa0SJjPY1s7Q6oexu5b3d_5d6swEY',
+      status: 'all good',
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(400).json({
+      error: err,
+      status: 'failed to retrieve messages from the database',
+    })
+  }
+})
+
+
 // a route to handle fetching a single message by its id
 app.get('/messages/:messageId', async (req, res) => {
   // load all messages from database
